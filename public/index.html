@@ -1,23 +1,666 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="generator" content="GitLab Pages">
-    <title>Plain HTML site using GitLab Pages</title>
-    <link rel="stylesheet" href="style.css">
-  </head>
-  <body>
-    <div class="navbar">
-      <a href="https://pages.gitlab.io/plain-html/">Plain HTML Example</a>
-      <a href="https://gitlab.com/pages/plain-html/">Repository</a>
-      <a href="https://gitlab.com/pages/">Other Examples</a>
+<title>Paper A4 Keynote</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@300;400;600;800&family=Caveat:wght@500&family=Courier+Prime&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one dark keynote stage, product locked to center, feature copy slides in from alternating sides. Single dark look by choice. */
+:root {
+  --stage: #050506;
+  --ink: #f5f5f7;
+  --muted: #86868b;
+  --hair: #2a2a2e;
+  --paper: #fbfaf7;
+  --paper-shade: #e4e1da;
+  --display: "Albert Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --body: "Albert Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --hand: "Caveat", "Bradley Hand", "Segoe Print", cursive;
+  --g1: #9ecbff; --g2: #c3a6ff;
+  --ease: cubic-bezier(.16,.84,.24,1);
+  --sh: min(56vh, 40vw);
+  color-scheme: dark;
+}
+html, body { height: 100%; }
+body {
+  background: var(--stage);
+  color: var(--ink);
+  font-family: var(--body);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+.stage {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  background: radial-gradient(60% 55% at 50% 48%, #141418 0%, var(--stage) 70%);
+}
+
+/* per-scene accent gradients */
+[data-scene="intro"]   { --g1: #f5f5f7; --g2: #a1a1a6; }
+[data-scene="retina"]  { --g1: #8ec5ff; --g2: #b69cff; }
+[data-scene="fold"]    { --g1: #ffb36b; --g2: #ff6f91; }
+[data-scene="ratio"]   { --g1: #6ee7d8; --g2: #6ea8ff; }
+[data-scene="thin"]    { --g1: #e8e8ed; --g2: #8e8e93; }
+[data-scene="offline"] { --g1: #7ee08a; --g2: #3fc1a7; }
+[data-scene="typewriter"] { --g1: #f2d7a6; --g2: #c98b4a; }
+[data-scene="ai"]      { --g1: #ff7aa8; --g2: #a970ff; }
+[data-scene="battery"] { --g1: #d4f56b; --g2: #57d97c; }
+[data-scene="outro"]   { --g1: #f5f5f7; --g2: #9a9aa0; }
+
+/* ---------- product ---------- */
+.product {
+  position: absolute; inset: 0;
+  display: grid; place-items: center;
+  perspective: 1600px;
+  transition: transform 1.4s var(--ease);
+}
+.stage[data-side="left"]  .product { transform: translateX(17vw); }
+.stage[data-side="right"] .product { transform: translateX(-17vw); }
+
+.rig {
+  position: relative;
+  height: var(--sh);
+  width: calc(var(--sh) * 0.7071);
+  transform-style: preserve-3d;
+}
+.floor {
+  position: absolute; left: 50%; top: 100%;
+  width: 130%; height: 18%;
+  transform: translate(-50%, 30%);
+  background: radial-gradient(closest-side, rgba(0,0,0,.85), transparent);
+  filter: blur(6px);
+  transition: transform 1.4s var(--ease), opacity 1.4s;
+}
+[data-scene="thin"] .floor { transform: translate(-50%, 30%) scaleX(.15); }
+
+.sheet {
+  position: absolute; inset: 0;
+  transform-style: preserve-3d;
+  transition: transform 1.6s var(--ease), opacity 1.2s;
+  transform: rotateX(22deg) rotateY(-28deg) rotateZ(6deg);
+}
+.stage:not(.booted) .sheet { transform: translateY(60vh) rotateX(75deg) rotateZ(-10deg); opacity: 0; }
+
+[data-scene="retina"]  .sheet { transform: rotateX(0) rotateY(0) scale(1.06); }
+[data-scene="fold"]    .sheet { transform: rotateX(38deg) rotateY(-24deg) rotateZ(-5deg); }
+[data-scene="ratio"]   .sheet { transform: none; }
+[data-scene="thin"]    .sheet { transform: rotateY(-88deg) rotateX(4deg); }
+[data-scene="offline"] .sheet { transform: rotateX(14deg) rotateY(20deg) rotateZ(-3deg); }
+[data-scene="typewriter"] .sheet { transform: rotateX(30deg) rotateY(8deg) rotateZ(-2deg); }
+[data-scene="ai"]      .sheet { transform: rotateX(6deg) rotateY(-14deg) rotateZ(1deg); }
+[data-scene="battery"] .sheet { transform: rotateX(12deg) rotateY(22deg) rotateZ(4deg); }
+[data-scene="outro"]   .sheet { transform: rotateX(20deg) rotateY(-20deg) rotateZ(5deg) translateY(-4%); }
+
+.half {
+  position: absolute; left: 0; right: 0; height: 50%;
+  transform-style: preserve-3d;
+}
+.half.top { top: 0; }
+.half.bottom {
+  top: 50%;
+  transform-origin: 50% 0;
+  transition: transform 1.5s var(--ease) .15s;
+}
+[data-scene="fold"] .half.bottom { transform: rotateX(176deg); }
+
+.face {
+  position: absolute; inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .06 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    linear-gradient(140deg, var(--paper) 0%, #f1efe9 55%, var(--paper-shade) 100%);
+}
+.half.top .face { box-shadow: inset 0 -1px 0 rgba(0,0,0,.04); }
+.half.bottom .front {
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .06 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    linear-gradient(160deg, #f1efe9 0%, var(--paper-shade) 100%);
+}
+.half.bottom .back {
+  transform: rotateX(180deg);
+  background: linear-gradient(0deg, #d9d6cf, #c9c6be);
+}
+.half.top .back { transform: rotateY(180deg); background: #d8d5ce; }
+
+/* handwriting (AI scene onward) */
+.hand {
+  position: absolute; left: 12%; top: 18%; right: 10%;
+  font-family: var(--hand); color: #24324f;
+  font-size: calc(var(--sh) * .062);
+  line-height: 1.35;
+  transform: rotate(-2deg);
+}
+.hand span {
+  display: block;
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 1.2s steps(18, end);
+}
+.hand span:nth-child(2) { transition-delay: 1.1s; }
+.hand span:nth-child(3) { transition-delay: 2.1s; text-align: right; }
+[data-scene="ai"] .hand span,
+[data-scene="battery"] .hand span,
+[data-scene="outro"] .hand span { clip-path: inset(0 0 0 0); }
+
+/* typewritten lines (typewriter scene onward) */
+.typed {
+  position: absolute; left: 12%; top: 16%; right: 8%;
+  font-family: "Courier Prime", "Courier New", Courier, monospace;
+  color: #1b1b1d; font-size: calc(var(--sh) * .037); line-height: 1.6;
+}
+.typed span {
+  display: block; white-space: nowrap; width: max-content;
+  clip-path: inset(0 100% 0 0);
+}
+.typed .t1 { transition: clip-path .8s steps(12, end) .9s; }
+.typed .t2 { transition: clip-path 1.4s steps(23, end) 2s; }
+.typed .t3 { transition: clip-path 1.3s steps(19, end) 3.6s; }
+.typed .t3::after {
+  content: ""; display: inline-block; width: .55em; height: 1em; margin-left: 2px;
+  vertical-align: -2px; background: #1b1b1d; animation: blink 1s steps(1) infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+[data-scene="typewriter"] .typed span,
+[data-scene="ai"] .typed span,
+[data-scene="battery"] .typed span,
+[data-scene="outro"] .typed span { clip-path: inset(0 0 0 0); }
+
+/* ---------- fx anchored to the rig ---------- */
+.fx {
+  position: absolute;
+  opacity: 0;
+  transition: opacity .6s, transform 1s var(--ease);
+  pointer-events: none;
+  transform: translateZ(2px);
+}
+
+/* ratio subdivision lines, live on the sheet */
+.cuts { position: absolute; inset: 0; transform: translateZ(1px); pointer-events: none; }
+.cut {
+  position: absolute; background: #2f6bff;
+  opacity: 0; transition: transform .9s var(--ease), opacity .3s;
+}
+.cut.h { height: 2px; transform: scaleX(0); transform-origin: 0 50%; }
+.cut.v { width: 2px; transform: scaleY(0); transform-origin: 50% 0; }
+.c1 { top: 50%; left: 0; width: 100%; }
+.c2 { left: 50%; top: 50%; height: 50%; }
+.c3 { top: 75%; left: 50%; width: 50%; }
+.c4 { left: 75%; top: 75%; height: 25%; }
+.c5 { top: 87.5%; left: 75%; width: 25%; }
+.lab {
+  position: absolute; font-family: var(--mono); color: #2f6bff;
+  font-size: calc(var(--sh) * .04); font-weight: 500;
+  transform: translate(-50%, -50%); opacity: 0; transition: opacity .5s;
+}
+.l4 { left: 50%; top: 25%; font-size: calc(var(--sh) * .07); }
+.l5 { left: 25%; top: 75%; }
+.l6 { left: 75%; top: 62.5%; }
+.l7 { left: 87.5%; top: 81.25%; font-size: calc(var(--sh) * .028); }
+[data-scene="ratio"] .cut { opacity: 1; transform: none; }
+[data-scene="ratio"] .lab { opacity: 1; }
+[data-scene="ratio"] .c1 { transition-delay: .6s; }
+[data-scene="ratio"] .c2, [data-scene="ratio"] .l5 { transition-delay: 1.3s; }
+[data-scene="ratio"] .c3, [data-scene="ratio"] .l6 { transition-delay: 2s; }
+[data-scene="ratio"] .c4 { transition-delay: 2.6s; }
+[data-scene="ratio"] .c5, [data-scene="ratio"] .l7 { transition-delay: 3.1s; }
+[data-scene="ratio"] .l4 { transition-delay: .9s; }
+
+.dim {
+  font-family: var(--mono); font-size: 12px; color: var(--muted);
+  display: flex; align-items: center; gap: 8px; white-space: nowrap;
+}
+.dim::before, .dim::after { content: ""; flex: 1; height: 1px; background: var(--hair); }
+.dim.w { left: 0; right: 0; top: -28px; }
+.dim.hgt { top: 50%; right: -28px; width: var(--sh); transform-origin: 50% 50%; transform: translate(50%, -50%) rotate(90deg); }
+[data-scene="ratio"] .dim { opacity: 1; transition-delay: .3s; }
+
+/* retina lens */
+.lens {
+  width: calc(var(--sh) * .42); aspect-ratio: 1;
+  right: -14%; top: 8%;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,.65);
+  box-shadow: 0 20px 60px rgba(0,0,0,.6), inset 0 0 0 6px rgba(255,255,255,.06);
+  background:
+    repeating-linear-gradient(23deg, rgba(120,110,95,.13) 0 1px, transparent 1px 7px),
+    repeating-linear-gradient(-61deg, rgba(120,110,95,.10) 0 1px, transparent 1px 11px),
+    radial-gradient(circle at 35% 30%, #ffffff, #ebe8e1);
+  display: grid; place-items: center; text-align: center;
+  transform: translateZ(40px) scale(.4);
+}
+.lens b { display: block; font-family: var(--display); font-weight: 800; font-size: calc(var(--sh) * .09); color: #1d1d1f; line-height: 1; }
+.lens small { font-family: var(--mono); font-size: 11px; color: #6e6e73; letter-spacing: .04em; }
+[data-scene="retina"] .lens { opacity: 1; transform: translateZ(40px) scale(1); transition-delay: .7s; }
+
+/* thinness caliper */
+.caliper {
+  left: 50%; top: -14%;
+  transform: translateX(-50%);
+  font-family: var(--mono); font-size: 13px; color: var(--ink);
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+}
+.caliper i { width: 1px; height: 40px; background: linear-gradient(var(--muted), transparent); }
+[data-scene="thin"] .caliper { opacity: 1; transition-delay: 1.4s; }
+
+/* offline */
+.wifi { width: calc(var(--sh) * .22); right: calc(100% + 20px); top: -6%;transform: translateZ(60px) translateY(20px); }
+[data-scene="offline"] .wifi { opacity: 1; transform: translateZ(60px); transition-delay: .7s; }
+.wifi .slash { stroke-dasharray: 120; stroke-dashoffset: 120; transition: stroke-dashoffset .7s var(--ease) 1.6s; }
+[data-scene="offline"] .wifi .slash { stroke-dashoffset: 0; }
+.notif {
+  left: calc(100% + 28px); bottom: 14%; white-space: nowrap;
+  font-family: var(--mono); font-size: 12px; color: var(--muted);
+  border: 1px solid var(--hair); border-radius: 999px; padding: 6px 12px;
+  background: rgba(20,20,24,.8);
+}
+[data-scene="offline"] .notif { opacity: 1; transition-delay: 2.2s; }
+
+/* AI chips bounce off */
+.chip {
+  left: calc(100% + 28px);
+  font-family: var(--body); font-size: 13px; font-weight: 600; color: #fff;
+  padding: 8px 14px; border-radius: 999px;
+  background: linear-gradient(90deg, #ff5f8f, #8d5bff);
+  box-shadow: 0 8px 30px rgba(141,91,255,.35);
+  white-space: nowrap;
+}
+.chip.k1 { top: 12%; } .chip.k2 { top: 44%; } .chip.k3 { top: 74%; }
+[data-scene="ai"] .chip { animation: rebuff 2.6s var(--ease) both; }
+[data-scene="ai"] .k2 { animation-delay: .7s; }
+[data-scene="ai"] .k3 { animation-delay: 1.4s; }
+@keyframes rebuff {
+  0%   { opacity: 0; transform: translateZ(60px) translateX(140px); }
+  35%  { opacity: 1; transform: translateZ(60px) translateX(-6px); }
+  48%  { opacity: 1; transform: translateZ(60px) translateX(4px) rotate(-4deg) scale(.96); }
+  100% { opacity: 0; transform: translateZ(60px) translateX(160px) translateY(-50px) rotate(16deg) scale(.8); }
+}
+.shield {
+  left: 50%; top: calc(100% + 36px); transform: translateX(-50%);
+  font-family: var(--mono); font-size: 12px; color: #ffb3cf; white-space: nowrap;
+}
+[data-scene="ai"] .shield { opacity: 1; transition-delay: 2.6s; }
+
+/* typewriter bell */
+.ding {
+  right: calc(100% + 28px); top: 54%;
+  font-family: "Courier Prime", "Courier New", monospace; font-size: 22px; font-weight: 700;
+  color: #f2d7a6; letter-spacing: .08em;
+  transform: translateZ(40px) scale(.6) rotate(-8deg);
+}
+[data-scene="typewriter"] .ding {
+  opacity: 1; transform: translateZ(40px) scale(1) rotate(-8deg);
+  transition: opacity .15s 5.2s, transform .5s cubic-bezier(.3,1.8,.5,1) 5.2s;
+}
+
+/* battery */
+.battery { width: calc(var(--sh) * .3); left: calc(100% + 28px); top: 34%; transform: translateZ(50px) translateY(16px); }
+[data-scene="battery"] .battery { opacity: 1; transform: translateZ(50px); transition-delay: .6s; }
+.battery .lvl { transform-origin: 0 50%; transform: scaleX(0); transition: transform 1.4s var(--ease) 1.1s; }
+[data-scene="battery"] .battery .lvl { transform: scaleX(1); }
+
+/* ---------- copy ---------- */
+.copy { position: absolute; inset: 0; pointer-events: none; }
+.blk {
+  position: absolute; top: 50%;
+  width: min(34ch, 34vw);
+  transform: translateY(-50%);
+  display: flex; flex-direction: column; gap: 14px;
+}
+.blk.left  { left: max(6vw, env(safe-area-inset-left, 0px)); }
+.blk.right { right: max(6vw, env(safe-area-inset-right, 0px)); }
+.blk.center {
+  left: 50%; top: auto; bottom: 9vh; width: min(40ch, 90vw);
+  transform: translateX(-50%); text-align: center; align-items: center;
+}
+.blk > * {
+  opacity: 0;
+  transform: translateY(26px);
+  filter: blur(6px);
+  transition: opacity .45s ease, transform .45s ease, filter .45s ease;
+}
+.blk.left > *  { transform: translateX(-40px); }
+.blk.right > * { transform: translateX(40px); }
+.blk.on > * {
+  opacity: 1; transform: none; filter: none;
+  transition: opacity 1s var(--ease), transform 1.1s var(--ease), filter 1s var(--ease);
+}
+.blk.on > :nth-child(1) { transition-delay: .55s; }
+.blk.on > :nth-child(2) { transition-delay: .7s; }
+.blk.on > :nth-child(3) { transition-delay: 1s; }
+.blk.on > :nth-child(4) { transition-delay: 1.35s; }
+
+.eyebrow {
+  font-family: var(--body); font-weight: 600; font-size: 15px;
+  color: var(--g1); letter-spacing: .01em;
+}
+.h {
+  margin: 0;
+  font-family: var(--display); font-weight: 800;
+  font-size: clamp(34px, 4.6vw, 68px);
+  line-height: 1.02; letter-spacing: -.035em;
+  text-wrap: balance;
+  background: linear-gradient(100deg, var(--g1), var(--g2));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.hero {
+  font-size: clamp(64px, 11vw, 150px);
+  letter-spacing: -.05em; line-height: .95;
+}
+.p {
+  margin: 0; color: var(--muted);
+  font-size: clamp(15px, 1.25vw, 19px); line-height: 1.45; font-weight: 400;
+  max-width: 34ch;
+}
+.p strong { color: var(--ink); font-weight: 600; }
+.specs {
+  display: flex; flex-wrap: wrap; gap: 22px 28px;
+  padding-top: 14px; border-top: 1px solid var(--hair);
+}
+.center .specs { justify-content: center; }
+.spec { display: flex; flex-direction: column; gap: 2px; }
+.spec b {
+  font-family: var(--display); font-weight: 600; font-size: clamp(20px, 1.9vw, 28px);
+  letter-spacing: -.02em; color: var(--ink); font-variant-numeric: tabular-nums;
+}
+.spec span { font-size: 12px; color: var(--muted); }
+
+/* ---------- controls ---------- */
+.controls {
+  position: absolute; left: 50%; bottom: max(18px, env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  display: flex; align-items: center; gap: 14px;
+  padding: 8px 10px 8px 14px; border-radius: 999px;
+  background: rgba(30,30,34,.72);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  z-index: 5;
+}
+.dots { display: flex; gap: 8px; align-items: center; }
+.dot {
+  position: relative; width: 8px; height: 8px; padding: 0; border: 0; border-radius: 999px;
+  background: #56565c; cursor: pointer; overflow: hidden;
+  transition: width .5s var(--ease), background .3s;
+}
+.dot.on { width: 36px; background: #3a3a40; }
+.dot.on::after {
+  content: ""; position: absolute; inset: 0; background: var(--ink);
+  transform-origin: 0 50%;
+  animation: fill var(--d, 5s) linear both;
+}
+.stage.paused .dot.on::after { animation-play-state: paused; }
+@keyframes fill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.dot:focus-visible, .pp:focus-visible { outline: 2px solid var(--g1); outline-offset: 3px; }
+.pp {
+  width: 32px; height: 32px; border-radius: 50%; border: 0; cursor: pointer;
+  background: #3a3a40; color: var(--ink); display: grid; place-items: center;
+}
+.pp svg { width: 12px; height: 12px; fill: currentColor; }
+
+.legal {
+  position: absolute; right: max(16px, env(safe-area-inset-right, 0px)); top: max(14px, env(safe-area-inset-top, 0px));
+  font-family: var(--mono); font-size: 10.5px; color: #55555a; letter-spacing: .02em;
+}
+
+/* ---------- phone ---------- */
+@media (max-width: 760px) {
+  :root { --sh: min(40vh, 62vw); }
+  .stage[data-side] .product { transform: translateY(-17vh); }
+  .blk, .blk.left, .blk.right, .blk.center {
+    left: max(16px, env(safe-area-inset-left, 0px)); right: max(16px, env(safe-area-inset-right, 0px));
+    width: auto; top: auto; bottom: 86px;
+    transform: none; text-align: center; align-items: center; gap: 10px;
+  }
+  .blk.left > *, .blk.right > * { transform: translateY(24px); }
+  .blk.on > * { transform: none; }
+  .specs { justify-content: center; gap: 14px 22px; }
+  .p { font-size: 15px; }
+  .lens { right: -22%; }
+  .wifi { right: calc(100% + 10px); }
+  .notif, .shield { display: none; }
+  .battery { left: calc(100% + 10px); width: calc(var(--sh) * .2); }
+  .ding { right: calc(100% + 10px); font-size: 16px; }
+  .chip { left: calc(100% + 10px); font-size: 11px; white-space: normal; width: 24vw; padding: 6px 10px; border-radius: 12px; }
+  .legal { left: max(16px, env(safe-area-inset-left, 0px)); text-align: center; }
+}
+@media (max-width: 760px) and (max-height: 700px) {
+  .specs { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet, .half.bottom, .product, .fx, .cut, .blk > * { transition-duration: .01s !important; transition-delay: 0s !important; }
+  [data-scene="ai"] .chip { animation: none; opacity: 1; transform: translateZ(30px); }
+  .dot.on::after { animation: none; transform: scaleX(1); }
+}
+</style>
+
+<main class="stage" id="stage" data-scene="intro" data-side="center" aria-roledescription="prezentace" lang="cs">
+  <div class="legal">Parodie. Nemáme nic společného s žádným ovocem.</div>
+
+  <div class="product" aria-hidden="true">
+    <div class="rig">
+      <div class="floor"></div>
+      <div class="sheet">
+        <div class="half top">
+          <div class="face front">
+            <div class="hand"><span>Moje vlastní nápady.</span><span>Žádné našeptávání.</span><span>— já</span></div>
+          </div>
+          <div class="face back"></div>
+        </div>
+        <div class="half bottom">
+          <div class="face front">
+            <div class="typed"><span class="t1">Milý papíre,</span><span class="t2">Bez baterie. Bez Wi-Fi.</span><span class="t3">Jen ťuk, ťuk, cink.</span></div>
+          </div>
+          <div class="face back"></div>
+        </div>
+        <div class="cuts">
+          <i class="cut h c1"></i><i class="cut v c2"></i><i class="cut h c3"></i><i class="cut v c4"></i><i class="cut h c5"></i>
+          <span class="lab l4">A5</span><span class="lab l5">A6</span><span class="lab l6">A7</span><span class="lab l7">A8</span>
+        </div>
+      </div>
+
+      <div class="fx dim w">210 mm</div>
+      <div class="fx dim hgt">297 mm</div>
+
+      <div class="fx lens"><div><b>∞</b><small>NALEZENO PIXELŮ: 0</small></div></div>
+
+      <div class="fx caliper"><span>0,1 mm</span><i></i></div>
+
+      <svg class="fx wifi" viewBox="0 0 100 100" fill="none" stroke="#7ee08a" stroke-width="7" stroke-linecap="round">
+        <path d="M14 42a52 52 0 0 1 72 0"/><path d="M27 56a33 33 0 0 1 46 0"/><path d="M40 70a14 14 0 0 1 20 0"/>
+        <circle cx="50" cy="82" r="4" fill="#7ee08a" stroke="none"/>
+        <path class="slash" d="M16 16 L84 88" stroke="#ff5f57"/>
+      </svg>
+      <div class="fx notif">0 nepřečtených · navždy</div>
+
+      <div class="fx ding">CINK!</div>
+
+      <div class="fx chip k1">✦ Mám to shrnout?</div>
+      <div class="fx chip k2">✦ Mám to přepsat?</div>
+      <div class="fx chip k3">✦ S tím vám pomůžu</div>
+      <div class="fx shield">ŽÁDOST ZAMÍTNUTA CELULÓZOU</div>
+
+      <svg class="fx battery" viewBox="0 0 120 60">
+        <rect x="3" y="3" width="104" height="54" rx="12" fill="none" stroke="#e8e8ed" stroke-width="4"/>
+        <rect x="110" y="20" width="7" height="20" rx="3" fill="#e8e8ed"/>
+        <rect class="lvl" x="10" y="10" width="90" height="40" rx="7" fill="#57d97c"/>
+        <text x="55" y="41" text-anchor="middle" font-family="Albert Sans, Helvetica, Arial, sans-serif" font-weight="800" font-size="30" fill="#0b2a12">∞</text>
+      </svg>
     </div>
+  </div>
 
-    <h1>Hello World!</h1>
+  <div class="copy">
+    <section class="blk center" data-s="intro" data-label="Představujeme">
+      <div class="eyebrow">Představujeme</div>
+      <h1 class="h hero">Papír.</h1>
+      <p class="p">A4. Displej, který můžete držet, přeložit a zapomenout ve vlaku.</p>
+    </section>
 
-    <p>
-      This is a simple plain-HTML website on GitLab Pages, without any fancy static site generator.
-    </p>
-  </body>
-</html>
+    <section class="blk left" data-s="retina" data-label="Displej">
+      <div class="eyebrow">Displej</div>
+      <h2 class="h">Retina? Retina od přírody.</h2>
+      <p class="p">Rozlišení papíru omezují jen oči, které se na něj dívají. Ověřili jsme to. <strong>Úzkým hrdlem jste vy.</strong></p>
+      <div class="specs">
+        <div class="spec"><b>∞ ppi</b><span>Hustota pixelů</span></div>
+        <div class="spec"><b>0 ms</b><span>Doba odezvy</span></div>
+        <div class="spec"><b>Slunce</b><span>Podsvícení</span></div>
+      </div>
+    </section>
 
+    <section class="blk right" data-s="fold" data-label="Design">
+      <div class="eyebrow">Design</div>
+      <h2 class="h">Skládací. Odjakživa.</h2>
+      <p class="p">Pantem je samotný papír. Přeložte ho jednou, přeložte ho dvakrát. Přehyb není vada. <strong>Je to funkce.</strong></p>
+      <div class="specs">
+        <div class="spec"><b>0</b><span>Součástek pantu</span></div>
+        <div class="spec"><b>≈ 7</b><span>Přehybů, než fyzika řekne dost</span></div>
+      </div>
+    </section>
+
+    <section class="blk left" data-s="ratio" data-label="Geometrie">
+      <div class="eyebrow">Geometrie</div>
+      <h2 class="h">1 : √2</h2>
+      <p class="p">Rozstřihněte ho napůl a dostanete stejný tvar, jen menší. Z A4 je A5, z A5 je A6. <strong>Zkuste to s telefonem.</strong></p>
+      <div class="specs">
+        <div class="spec"><b>210 × 297</b><span>Velikost displeje, mm</span></div>
+        <div class="spec"><b>1,4142</b><span>Poměr stran</span></div>
+        <div class="spec"><b>ISO 216</b><span>Certifikováno od roku 1975</span></div>
+      </div>
+    </section>
+
+    <section class="blk right" data-s="thin" data-label="Tloušťka">
+      <div class="eyebrow">Tloušťka</div>
+      <h2 class="h">0,1 mm. Nejtenčí v historii.</h2>
+      <p class="p">Tak tenký, že když ho otočíte bokem, skoro zmizí. <strong>Což právě teď dělá.</strong></p>
+      <div class="specs">
+        <div class="spec"><b>≈ 5 g</b><span>Hmotnost při 80 g/m²</span></div>
+        <div class="spec"><b>0</b><span>Portů. Ani jeden.</span></div>
+      </div>
+    </section>
+
+    <section class="blk left" data-s="offline" data-label="Konektivita">
+      <div class="eyebrow">Konektivita</div>
+      <h2 class="h">Offline. Úplně.</h2>
+      <p class="p">Žádná Wi‑Fi. Žádný Bluetooth. Žádná upozornění. Papír respektuje vaše soustředění tím, že <strong>vůbec netuší, kdo jste.</strong></p>
+      <div class="specs">
+        <div class="spec"><b>0</b><span>Upozornění</span></div>
+        <div class="spec"><b>0</b><span>Aktualizací softwaru</span></div>
+        <div class="spec"><b>100 %</b><span>Soukromí</span></div>
+      </div>
+    </section>
+
+    <section class="blk right" data-s="typewriter" data-label="Kompatibilita">
+      <div class="eyebrow">Kompatibilita</div>
+      <h2 class="h">Kompatibilní s psacím strojem.</h2>
+      <p class="p">Funguje s každým psacím strojem, jaký kdy vznikl. Žádné ovladače, párování ani redukce. <strong>Prostě ho založte a ťukejte.</strong></p>
+      <div class="specs">
+        <div class="spec"><b>0</b><span>Potřebných ovladačů</span></div>
+        <div class="spec"><b>Od 1868</b><span>Zpětná kompatibilita</span></div>
+        <div class="spec"><b>Cink!</b><span>Nativní zvuk upozornění</span></div>
+      </div>
+    </section>
+
+    <section class="blk left" data-s="ai" data-label="Inteligence">
+      <div class="eyebrow">Inteligence</div>
+      <h2 class="h">Odolný vůči AI.</h2>
+      <p class="p">Nic, co napíšete, se neshrne, nedoplní ani nepoužije k trénování. <strong>Halucinace jsou čistě vaše.</strong></p>
+      <div class="specs">
+        <div class="spec"><b>0</b><span>Parametrů</span></div>
+        <div class="spec"><b>1 mozek</b><span>Dodává uživatel</span></div>
+      </div>
+    </section>
+
+    <section class="blk left" data-s="battery" data-label="Baterie">
+      <div class="eyebrow">Baterie</div>
+      <h2 class="h">Výdrž na celý den. Vlastně na celé století.</h2>
+      <p class="p">Papír nespotřebuje ani watt. Kvalitní papír vydrží staletí. <strong>Váš telefon vydrží zhruba do čtyř odpoledne.</strong></p>
+      <div class="specs">
+        <div class="spec"><b>0 W</b><span>Příkon</span></div>
+        <div class="spec"><b>0</b><span>Nabíječek, které můžete ztratit</span></div>
+      </div>
+    </section>
+
+    <section class="blk center" data-s="outro" data-label="Papír A4">
+      <h2 class="h hero">Papír. A4.</h2>
+      <p class="p">K dostání v bílé. A taky v bílé. <strong>Od 0,25 Kč za list,</strong> v balení po 500 kusech.</p>
+      <div class="specs">
+        <div class="spec"><b>Hned teď</b><span>V každé tiskárně poblíž</span></div>
+      </div>
+    </section>
+  </div>
+
+  <nav class="controls" aria-label="Přehrávání">
+    <div class="dots" id="dots"></div>
+    <button class="pp" id="pp" type="button" aria-label="Pozastavit">
+      <svg viewBox="0 0 12 12" id="ppIcon"><rect x="1.5" y="1" width="3" height="10" rx="1"/><rect x="7.5" y="1" width="3" height="10" rx="1"/></svg>
+    </button>
+  </nav>
+</main>
+
+<script>
+(() => {
+  const stage = document.getElementById('stage');
+  const blocks = [...document.querySelectorAll('.blk')];
+  const dotsEl = document.getElementById('dots');
+  const pp = document.getElementById('pp');
+  const ppIcon = document.getElementById('ppIcon');
+  const durations = { intro: 4600, retina: 5600, fold: 5400, ratio: 6200, thin: 5200, offline: 5600, typewriter: 7000, ai: 6000, battery: 5600, outro: 7000 };
+  const scenes = blocks.map(b => ({ id: b.dataset.s, side: [...b.classList].find(c => ['left','right','center'].includes(c)), label: b.dataset.label, d: durations[b.dataset.s] || 5000 }));
+
+  const dots = scenes.map((s, n) => {
+    const d = document.createElement('button');
+    d.className = 'dot'; d.type = 'button';
+    d.setAttribute('aria-label', s.label);
+    d.addEventListener('click', () => go(n));
+    dotsEl.appendChild(d);
+    return d;
+  });
+
+  let i = 0, timer = null, paused = false, startedAt = 0, remaining = 0;
+
+  function go(n) {
+    i = (n + scenes.length) % scenes.length;
+    const s = scenes[i];
+    stage.dataset.scene = s.id;
+    stage.dataset.side = s.side;
+    blocks.forEach(b => b.classList.toggle('on', b.dataset.s === s.id));
+    dots.forEach((d, k) => {
+      d.classList.remove('on');
+      if (k === i) { void d.offsetWidth; d.style.setProperty('--d', s.d + 'ms'); d.classList.add('on'); }
+      d.setAttribute('aria-current', k === i ? 'step' : 'false');
+    });
+    remaining = s.d;
+    schedule();
+  }
+  function schedule() {
+    clearTimeout(timer);
+    if (paused) return;
+    startedAt = performance.now();
+    timer = setTimeout(() => go(i + 1), remaining);
+  }
+  function setPaused(p) {
+    paused = p;
+    stage.classList.toggle('paused', p);
+    if (p) { clearTimeout(timer); remaining -= performance.now() - startedAt; }
+    else schedule();
+    pp.setAttribute('aria-label', p ? 'Přehrát' : 'Pozastavit');
+    ppIcon.innerHTML = p
+      ? '<path d="M2.5 1.2v9.6a.6.6 0 0 0 .9.5l7.6-4.8a.6.6 0 0 0 0-1L3.4.7a.6.6 0 0 0-.9.5z"/>'
+      : '<rect x="1.5" y="1" width="3" height="10" rx="1"/><rect x="7.5" y="1" width="3" height="10" rx="1"/>';
+  }
+  pp.addEventListener('click', () => setPaused(!paused));
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight') go(i + 1);
+    else if (e.key === 'ArrowLeft') go(i - 1);
+    else if (e.key === ' ' && e.target === document.body) { e.preventDefault(); setPaused(!paused); }
+  });
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden && !paused) { setPaused(true); stage.dataset.autopaused = '1'; }
+    else if (!document.hidden && stage.dataset.autopaused) { delete stage.dataset.autopaused; setPaused(false); }
+  });
+
+  go(0);
+  requestAnimationFrame(() => requestAnimationFrame(() => stage.classList.add('booted')));
+})();
+</script>
