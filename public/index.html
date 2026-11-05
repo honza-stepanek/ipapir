@@ -59,6 +59,8 @@ body {
 }
 .stage[data-side="left"]  .product { transform: translateX(17vw); }
 .stage[data-side="right"] .product { transform: translateX(-17vw); }
+/* centered title slides: lift and shrink the sheet so the headline never sits on white paper */
+.stage[data-side="center"] .product { transform: translateY(-18vh) scale(.66); }
 
 .rig {
   position: relative;
@@ -312,9 +314,16 @@ body {
 .blk.left  { left: max(6vw, env(safe-area-inset-left, 0px)); }
 .blk.right { right: max(6vw, env(safe-area-inset-right, 0px)); }
 .blk.center {
-  left: 50%; top: auto; bottom: 9vh; width: min(40ch, 90vw);
+  left: 50%; top: auto; bottom: max(9vh, 92px); width: min(40ch, 90vw);
   transform: translateX(-50%); text-align: center; align-items: center;
 }
+/* dark halo behind every copy block, so text stays readable even if the sheet drifts underneath */
+.blk::before {
+  content: ""; position: absolute; inset: -40px -70px; z-index: -1;
+  background: radial-gradient(closest-side, rgba(5,5,6,.94) 55%, rgba(5,5,6,0));
+  opacity: 0; transition: opacity .6s;
+}
+.blk.on::before { opacity: 1; }
 .blk > * {
   opacity: 0;
   transform: translateY(26px);
@@ -400,7 +409,7 @@ body {
 
 .legal {
   position: absolute; right: max(16px, env(safe-area-inset-right, 0px)); top: max(14px, env(safe-area-inset-top, 0px));
-  font-family: var(--mono); font-size: 10.5px; color: #55555a; letter-spacing: .02em;
+  font-family: var(--mono); font-size: 10.5px; color: #8e8e93; letter-spacing: .02em;
 }
 
 /* ---------- phone ---------- */
@@ -436,7 +445,7 @@ body {
 </style>
 
 <main class="stage" id="stage" data-scene="intro" data-side="center" aria-roledescription="prezentace" lang="cs">
-  <div class="legal">Parodie. Nemáme nic společného s žádným ovocem.</div>
+  <div class="legal">Nemáme nic společného s&nbsp;žádným ovocem.</div>
 
   <div class="product" aria-hidden="true">
     <div class="rig">
@@ -494,7 +503,7 @@ body {
     <section class="blk center" data-s="intro" data-label="Představujeme">
       <div class="eyebrow">Představujeme</div>
       <h1 class="h hero">Papír.</h1>
-      <p class="p">A4. Displej, který můžete držet, přeložit a zapomenout ve vlaku.</p>
+      <p class="p">A4. Displej, který můžete držet, přeložit a&nbsp;zapomenout ve vlaku.</p>
     </section>
 
     <section class="blk left" data-s="retina" data-label="Displej">
@@ -521,7 +530,7 @@ body {
     <section class="blk left" data-s="ratio" data-label="Geometrie">
       <div class="eyebrow">Geometrie</div>
       <h2 class="h">1 : √2</h2>
-      <p class="p">Rozstřihněte ho napůl a dostanete stejný tvar, jen menší. Z A4 je A5, z A5 je A6. <strong>Zkuste to s telefonem.</strong></p>
+      <p class="p">Rozstřihněte ho napůl a dostanete stejný tvar, jen menší. Z A4 je A5, z&nbsp;A5 je A6. <strong>Zkuste to&nbsp;telefonem.</strong></p>
       <div class="specs">
         <div class="spec"><b>210 × 297</b><span>Velikost displeje, mm</span></div>
         <div class="spec"><b>1,4142</b><span>Poměr stran</span></div>
@@ -564,7 +573,7 @@ body {
     <section class="blk left" data-s="ai" data-label="Inteligence">
       <div class="eyebrow">Inteligence</div>
       <h2 class="h">Odolný vůči AI.</h2>
-      <p class="p">Nic, co napíšete, se neshrne, nedoplní ani nepoužije k trénování. <strong>Halucinace jsou čistě vaše.</strong></p>
+      <p class="p">Nic, co napíšete, se neshrne, nedoplní ani nepoužije k&nbsp;trénování. <strong>Halucinace jsou čistě vaše.</strong></p>
       <div class="specs">
         <div class="spec"><b>0</b><span>Parametrů</span></div>
         <div class="spec"><b>1 mozek</b><span>Dodává uživatel</span></div>
@@ -605,7 +614,7 @@ body {
   const dotsEl = document.getElementById('dots');
   const pp = document.getElementById('pp');
   const ppIcon = document.getElementById('ppIcon');
-  const durations = { intro: 4600, retina: 5600, fold: 5400, ratio: 6200, thin: 5200, offline: 5600, typewriter: 7000, ai: 6000, battery: 5600, outro: 7000 };
+  const durations = { intro: 8600, retina: 9600, fold: 9400, ratio: 10200, thin: 9200, offline: 9600, typewriter: 11000, ai: 10000, battery: 9600, outro: 11000 };
   const scenes = blocks.map(b => ({ id: b.dataset.s, side: [...b.classList].find(c => ['left','right','center'].includes(c)), label: b.dataset.label, d: durations[b.dataset.s] || 5000 }));
 
   const dots = scenes.map((s, n) => {
